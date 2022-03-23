@@ -43,8 +43,8 @@ SFE_BMP180 pressure; // Object for BMP180 wired on SDA-21 SCL-22
 
 /* WIFI related */
 /* **NOTE NB  Replace with your network credentials NOTE NB*/
-const char* ssid     = "YOUR SSID";
-const char* password = "YOUR WIFI Password";
+const char* ssid     = "your ssid";
+const char* password = "your password";
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
 String header; // Variable to store the HTTP reques
@@ -135,7 +135,7 @@ void NokiaSetup(void)
   mylcd.LCDInit(inverse, contrast, bias); // init  the LCD
   mylcd.LCDClear(0x00);  
   mylcd.LCDgotoXY(0, 0);
-  mylcd.LCDCustomChar(splashscreen, sizeof(splashscreen) / sizeof(unsigned char), 0x00, true);
+  mylcd.LCDCustomChar(splashscreen, sizeof(splashscreen) / sizeof(unsigned char), LCDPadding_None, true);
   delay(INITDELAY);
   mylcd.LCDClear(0x00); // Clear whole screen
   NokiaDisplay();
@@ -162,7 +162,6 @@ void SerialSetup(void)
 String DHT22ReadTemperature(void)
 {
   UpdateCount();
-  static char outstrTemp[8];
   // Get temperature event and print its value.
   Serial.println("DHT22 data!");
   sensors_event_t event;
@@ -175,14 +174,13 @@ String DHT22ReadTemperature(void)
     Serial.print(F("Temperature: "));
     Serial.print(event.temperature);
     Serial.println(F("°C"));
-    dtostrf(event.temperature, 6, 2, outstrTemp);
-    mylcd.LCDFont(2); // Set the font
+    mylcd.LCDFont(LCDFont_Thick); // Set the font
     mylcd.LCDgotoXY(0, 0); // (go to (X , Y) (0-84 columns, 0-5 blocks) top left corner
     mylcd.LCDString("DHT22"); 
-    mylcd.LCDFont(1); // Set the font
+    mylcd.LCDFont(LCDFont_Default); // Set the font
     mylcd.LCDgotoXY(0, 1); // (go to (X , Y) (0-84 columns, 0-5 blocks) top left corner
     mylcd.LCDString("T=");
-    mylcd.LCDString(outstrTemp); //print
+    mylcd.print(event.temperature); //print
     mylcd.LCDString(" C");
     return String(event.temperature);
   }
@@ -193,7 +191,7 @@ String DHT22ReadTemperature(void)
    Returns: humidity  as a float */
 String DHT22ReadHumidity(void)
 {
-  static char outstrHum[8];
+  
   // Get humidity event and print its value.
   sensors_event_t event;
   dht.humidity().getEvent(&event);
@@ -205,11 +203,11 @@ String DHT22ReadHumidity(void)
     Serial.print(F("Humidity: "));
     Serial.print(event.relative_humidity);
     Serial.println(F("%"));
-    mylcd.LCDFont(1); // Set the font
+    mylcd.LCDFont(LCDFont_Default); // Set the font
     mylcd.LCDgotoXY(0, 2); 
-    dtostrf(event.relative_humidity, 6, 2, outstrHum);
+    
     mylcd.LCDString("H=");
-    mylcd.LCDString(outstrHum); //print
+    mylcd.print(event.relative_humidity); //print
     mylcd.LCDString(" %"); //print
     return String(event.relative_humidity);
   }
@@ -272,13 +270,13 @@ String bmp180Read(uint8_t choice = 2)
         Serial.print(BMP180temperature, 2);
         Serial.println(" deg C, ");
         dtostrf(BMP180temperature, 6, 2, outstrtemp);
-        mylcd.LCDFont(2); 
+        mylcd.LCDFont(LCDFont_Thick); 
         mylcd.LCDgotoXY(0, 3); 
         mylcd.LCDString("BMP180");
-        mylcd.LCDFont(1); // Set the font
+        mylcd.LCDFont(LCDFont_Default); // Set the font
         mylcd.LCDgotoXY(0, 4); // (go to (X , Y) (0-84 columns, 0-5 blocks) top left corner
         mylcd.LCDString("T=");
-        mylcd.LCDString(outstrtemp); //print
+        mylcd.print(BMP180temperature ,2); //print
         mylcd.LCDString(" C");
         return outstrtemp;
        }
@@ -309,10 +307,10 @@ String bmp180Read(uint8_t choice = 2)
             Serial.print(BMP180pressure, 2);
             Serial.println(" mb, ");
             dtostrf(BMP180pressure, 6, 2, outstrpress);
-            mylcd.LCDFont(1); // Set the font
+            mylcd.LCDFont(LCDFont_Default); // Set the font
             mylcd.LCDgotoXY(0, 5); // (go to (X , Y) (0-84 columns, 0-5 blocks) top left corner
             mylcd.LCDString("P=");
-            mylcd.LCDString(outstrpress); //print
+            mylcd.print(BMP180pressure, 2); //print
             mylcd.LCDString(" mb");
             return  outstrpress;
           }
